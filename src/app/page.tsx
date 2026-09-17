@@ -4,6 +4,7 @@ import Experience from "@/sections/Experience";
 import Projects from "@/sections/Projects";
 import Tools from "@/sections/Tools";
 import Endorsements from "@/sections/Endorsements";
+import Contact from "@/sections/Contact";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Projects />
       <Tools />
       <Endorsements />
+      <Contact />
     </>
   );
 }
