@@ -7,6 +7,7 @@ type Certification = {
   completed: string;
   detail?: string;
   credentialId?: string;
+  credentialUrl?: string;
   icon: IconType;
 };
 
@@ -17,6 +18,8 @@ const certifications: Certification[] = [
     title: "MATLAB Onramp",
     issuer: "MathWorks (Training Services)",
     completed: "September 17, 2026",
+    credentialUrl:
+      "https://matlabacademy.mathworks.com/progress/share/certificate.html?id=60a66a55-da92-4bb4-b0a4-d3337030227f&",
     icon: FiAward,
   },
   {
@@ -37,7 +40,15 @@ export default function Certifications() {
       </h2>
       <div className="grid w-full max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
         {certifications.map(
-          ({ title, issuer, completed, detail, credentialId, icon: Icon }) => (
+          ({
+            title,
+            issuer,
+            completed,
+            detail,
+            credentialId,
+            credentialUrl,
+            icon: Icon,
+          }) => (
             <article
               key={title}
               className="flex flex-col gap-3 rounded-lg border border-[#C6A15B]/60 p-6"
@@ -59,6 +70,16 @@ export default function Certifications() {
                 <p className="mt-1 font-sans text-xs text-[#F5EFE0]/50">
                   Credential ID: {credentialId}
                 </p>
+              )}
+              {credentialUrl && (
+                <a
+                  href={credentialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 font-sans text-xs text-[#C6A15B] underline underline-offset-4 hover:text-[#F5EFE0]"
+                >
+                  View Credential
+                </a>
               )}
             </article>
           ),
