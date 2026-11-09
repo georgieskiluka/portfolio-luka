@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
+import type { Endorsement } from "@/content/portfolio";
 
 const Splash = () => (
   <div style={{ minHeight: "100vh", background: "var(--navy)" }} />
@@ -27,12 +28,20 @@ function subscribe() {
   return () => query.removeEventListener("change", handle);
 }
 
-export default function PortfolioApp() {
+export default function PortfolioApp({
+  approved,
+}: {
+  approved: Endorsement[];
+}) {
   const isPhone = useSyncExternalStore<boolean | null>(
     subscribe,
     () => window.matchMedia(PHONE_QUERY).matches,
     () => null
   );
   if (isPhone === null) return <Splash />;
-  return isPhone ? <Mobile /> : <Desktop />;
+  return isPhone ? (
+    <Mobile approved={approved} />
+  ) : (
+    <Desktop approved={approved} />
+  );
 }

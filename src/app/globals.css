@@ -142,3 +142,214 @@ a:hover {
 .pf-scroller::-webkit-scrollbar {
   display: none;
 }
+
+.pf-end-cta,
+.pf-end-submit {
+  height: 48px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.pf-end-cta:hover,
+.pf-end-cta:active,
+.pf-end-submit:hover,
+.pf-end-submit:active {
+  background: var(--gold-pressed);
+}
+
+.pf-end-cta:focus-visible,
+.pf-end-dialog :focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+.pf-end-dialog {
+  width: min(520px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fbf8f0;
+  color: var(--navy);
+  text-align: left;
+}
+
+.pf-end-dialog::backdrop {
+  background: rgba(0, 0, 40, 0.65);
+}
+
+html:has(.pf-end-dialog[open]) {
+  overflow: hidden;
+}
+
+.pf-end-card {
+  position: relative;
+  padding: clamp(32px, 7vw, 44px);
+}
+
+.pf-end-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--navy);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.pf-end-title {
+  margin: 0;
+  padding-right: 44px;
+  font-size: clamp(26px, 6vw, 32px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.pf-end-intro {
+  margin: 10px 0 24px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.pf-end-field {
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+}
+
+.pf-end-label {
+  display: block;
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pf-end-field input:not([type="radio"]),
+.pf-end-field textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--navy);
+  border-radius: 0;
+  background: #ffffff;
+  color: var(--navy);
+  font: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.pf-end-field input::placeholder {
+  color: rgba(0, 0, 104, 0.6);
+}
+
+.pf-end-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.pf-end-stars label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pf-end-stars input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pf-end-stars input:focus-visible + span {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+.pf-end-count {
+  margin: 4px 0 0;
+  font-size: 13px;
+  text-align: right;
+}
+
+.pf-end-error {
+  margin: 6px 0 0;
+  color: #a31621;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pf-end-trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.pf-end-submit {
+  margin-top: 8px;
+}
+
+.pf-end-submit:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.pf-admin-input {
+  padding: 10px 12px;
+  border: 1px solid var(--cream);
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+}
+
+.pf-admin-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 1px solid var(--gold);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--gold);
+  font-size: 15px;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+
+.pf-admin-btn::-webkit-details-marker {
+  display: none;
+}
+
+.pf-admin-btn-primary {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+.pf-admin-btn:hover {
+  background: var(--gold-pressed);
+  border-color: var(--gold-pressed);
+  color: var(--navy);
+}

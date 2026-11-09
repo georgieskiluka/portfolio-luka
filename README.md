@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Endorsements
+
+Visitors submit endorsements from the Endorsements section. Each one waits at `/admin` until approved, then appears on a card. Set these in the Vercel project:
+
+| Variable | Where it comes from |
+| --- | --- |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Added automatically when Upstash for Redis is connected from the Vercel Marketplace |
+| `ADMIN_PASSWORD` | A long password you choose for `/admin` |
+| `RESEND_API_KEY` | An API key from a Resend account registered to the notification address in `src/lib/endorsements/notify.ts` |
+
 ## Getting Started
 
 First, run the development server:

@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- these images are driven by the scroll engine */
 import { about, contactLinks } from "@/content/portfolio";
+import EndorsementDialog from "./EndorsementDialog";
 import PortfolioLogic from "./PortfolioLogic";
 import {
   CertificateFace,
@@ -1981,6 +1982,17 @@ export default class PortfolioDesktop extends PortfolioLogic {
               </div>
             </article>
           ))}
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: 36,
+              transform: "translateX(-50%)",
+              zIndex: 5,
+            }}
+          >
+            <EndorsementDialog />
+          </div>
         </div>
       </section>
     );

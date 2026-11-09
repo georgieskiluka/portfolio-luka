@@ -5,8 +5,8 @@ import {
   about,
   certifications,
   contactLinks,
-  endorsements,
   experience,
+  fillEndorsementCards,
   heroTagline,
   projects,
   tools,
@@ -18,7 +18,9 @@ import {
   PhotoSlot,
   SANS,
   SERIF,
+  starsFor,
 } from "./parts";
+import EndorsementDialog from "./EndorsementDialog";
 import "./hero-bloom";
 import "./signature";
 
@@ -591,7 +593,7 @@ function Tools() {
   );
 }
 
-function Endorsements() {
+function Endorsements({ approved }) {
   return (
     <section
       id="endorsements"
@@ -626,21 +628,25 @@ function Endorsements() {
         />
       </div>
       <div className="pf-scroller" style={{ gap: 16, padding: "40px 7vw" }}>
-        {endorsements.map((e, i) => (
+        {fillEndorsementCards(approved).map((e, i) => (
           <article
             key={i}
             style={{ flex: "0 0 86vw", scrollSnapAlign: "center" }}
           >
             <EndorsementFace
               endorsement={e}
-              stars={
-                e.rating ? "★".repeat(e.rating) + "☆".repeat(5 - e.rating) : ""
-              }
+              stars={starsFor(e.rating)}
               ratingLabel={e.rating ? `${e.rating} out of 5` : undefined}
-              style={{ boxShadow: "0 16px 32px rgba(0, 0, 40, 0.16)" }}
+              style={{
+                height: "100%",
+                boxShadow: "0 16px 32px rgba(0, 0, 40, 0.16)",
+              }}
             />
           </article>
         ))}
+      </div>
+      <div style={{ textAlign: "center", padding: "0 20px 48px" }}>
+        <EndorsementDialog />
       </div>
     </section>
   );
@@ -687,7 +693,7 @@ function Contact() {
   );
 }
 
-export default function PortfolioMobile() {
+export default function PortfolioMobile({ approved }) {
   return (
     <div
       style={{
@@ -706,7 +712,7 @@ export default function PortfolioMobile() {
       <Projects />
       <Certifications />
       <Tools />
-      <Endorsements />
+      <Endorsements approved={approved} />
       <Contact />
     </div>
   );

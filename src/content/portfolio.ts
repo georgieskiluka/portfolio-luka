@@ -235,6 +235,11 @@ export type Endorsement = {
 
 export const endorsements: Endorsement[] = [{}, {}, {}, {}, {}];
 
+/** Puts approved endorsements on the cards, in order. Unused cards stay blank. */
+export function fillEndorsementCards(approved: Endorsement[] = []) {
+  return endorsements.map((blank, i) => approved[i] ?? blank);
+}
+
 export const contactLinks: { label: string; href: string; icon: IconType }[] = [
   {
     label: "Email",

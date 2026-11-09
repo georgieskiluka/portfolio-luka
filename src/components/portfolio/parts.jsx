@@ -143,25 +143,12 @@ const corner = (position, size) => ({
   height: size.h,
 });
 
-/** Front of an endorsement card. With no quote it renders as a blank card. */
-export function EndorsementFace({ endorsement, stars, ratingLabel, style }) {
-  const { quote, name, role } = endorsement;
-  const ink = "var(--navy)";
+const ink = "var(--navy)";
+
+/** The double-ruled corner ornaments shared by endorsement cards and the form. */
+export function CardCorners() {
   return (
-    <div
-      aria-hidden={quote ? undefined : true}
-      style={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        gap: 20,
-        minHeight: 300,
-        padding: "44px 44px 40px",
-        boxSizing: "border-box",
-        background: "#FBF8F0",
-        ...style,
-      }}
-    >
+    <>
       <div
         style={{
           ...corner({ top: 10, right: 10 }, { w: "50%", h: "50%" }),
@@ -196,6 +183,40 @@ export function EndorsementFace({ endorsement, stars, ratingLabel, style }) {
           borderLeft: `1px solid ${ink}`,
         }}
       />
+    </>
+  );
+}
+
+/** A rating as five filled or empty stars. */
+export function starsFor(rating) {
+  return rating ? "★".repeat(rating) + "☆".repeat(5 - rating) : "";
+}
+
+/** Front of an endorsement card. With no quote it renders as a blank card. */
+export function EndorsementFace({
+  endorsement,
+  stars,
+  ratingLabel,
+  style = {},
+}) {
+  const { quote, name, role } = endorsement;
+  return (
+    <div
+      aria-hidden={quote ? undefined : true}
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        gap: 20,
+        minHeight: 300,
+        padding: "44px 44px 40px",
+        boxSizing: "border-box",
+        background: "#FBF8F0",
+        overflowWrap: "anywhere",
+        ...style,
+      }}
+    >
+      <CardCorners />
       {stars && (
         <div
           aria-label={ratingLabel}

@@ -5,10 +5,12 @@ import {
   certifications,
   endorsements,
   experience,
+  fillEndorsementCards,
   heroTagline,
   projects,
   tools,
 } from "@/content/portfolio";
+import { starsFor } from "./parts";
 
 export default class PortfolioLogic extends React.Component {
   state = {
@@ -206,6 +208,8 @@ export default class PortfolioLogic extends React.Component {
   _armSnapGuard() {
     if (this._snapLock) return;
     const intercept = (e, dy) => {
+      // The endorsement form needs its own keys and scrolling.
+      if (e.target?.closest?.("dialog")) return;
       if (this._menuOpen) {
         if (!(
           e.type === "keydown" &&
@@ -435,6 +439,7 @@ export default class PortfolioLogic extends React.Component {
         z = R * c - R,
         y = -ph * vh * 0.38;
       el.style.visibility = "visible";
+      el.style.marginTop = -el.offsetHeight / 2 + "px"; // long quotes make taller cards
       el.style.zIndex = c >= 0 ? 4 : 1;
       el.style.setProperty(
         "--o",
@@ -3088,11 +3093,11 @@ export default class PortfolioLogic extends React.Component {
         this._contact = el;
         if (el) this._endQueue && this._endQueue();
       },
-      endorsements: PortfolioLogic.ENDORSE.map((e, i) => ({
+      endorsements: fillEndorsementCards(this.props.approved).map((e, i) => ({
         ...e,
         key: "end" + i,
         ref: this._endCardRefs[i],
-        stars: e.rating ? "★".repeat(e.rating) + "☆".repeat(5 - e.rating) : "",
+        stars: starsFor(e.rating),
         ratingLabel: e.rating ? e.rating + " out of 5" : undefined,
       })),
       sigStroke: this.props.sigStroke ?? 12,
