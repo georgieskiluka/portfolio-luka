@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Endorsements
 
-Visitors submit endorsements from the Endorsements section. Each one waits at `/admin` until approved, then appears on a card. Set these in the Vercel project:
+Visitors submit endorsements from the Endorsements section. Each one waits at `/admin` until approved. The first approvals fill the free cards; once all five are in use, `/admin` is where you choose which ones show. Set these in the Vercel project:
 
 | Variable | Where it comes from |
 | --- | --- |

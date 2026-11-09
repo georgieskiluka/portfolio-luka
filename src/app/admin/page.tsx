@@ -16,7 +16,7 @@ import {
   storeConfigured,
   type StoredEndorsement,
 } from "@/lib/endorsements/store";
-import { approve, login, logout, reject, unpublish } from "./actions";
+import { approve, hide, login, logout, reject, show } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -62,20 +62,35 @@ function ActionForm({
   action,
   id,
   className,
+  disabled,
   children,
 }: {
   action: (formData: FormData) => Promise<void>;
   id: string;
   className: string;
+  disabled?: boolean;
   children: ReactNode;
 }) {
   return (
     <form action={action}>
       <input type="hidden" name="id" value={id} />
-      <button type="submit" className={className}>
+      <button type="submit" className={className} disabled={disabled}>
         {children}
       </button>
     </form>
+  );
+}
+
+function DeleteAction({ id, label }: { id: string; label: string }) {
+  return (
+    <details>
+      <summary className="pf-admin-btn">{label}</summary>
+      <div style={{ marginTop: 10 }}>
+        <ActionForm action={reject} id={id} className="pf-admin-btn">
+          Yes, delete it for good
+        </ActionForm>
+      </div>
+    </details>
   );
 }
 
@@ -177,7 +192,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     );
   }
 
-  const { pending, approved } = await listEndorsements();
+  const { pending, displayed, hidden } = await listEndorsements();
+  const cardsFull = displayed.length >= cardSlots.length;
 
   return (
     <main style={page}>
@@ -202,60 +218,74 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       {pending.length === 0 ? (
         <p>Nothing is waiting for you.</p>
       ) : (
+        <>
+          {cardsFull && (
+            <p style={{ marginTop: 0 }}>
+              All {cardSlots.length} cards are in use, so anything you approve
+              stays off the site until you choose to show it.
+            </p>
+          )}
+          <CardList>
+            {pending.map((e) => (
+              <Card key={e.id} endorsement={e} note="Not on the site yet.">
+                <ActionForm
+                  action={approve}
+                  id={e.id}
+                  className="pf-admin-btn pf-admin-btn-primary"
+                >
+                  Approve
+                </ActionForm>
+                <DeleteAction id={e.id} label="Reject" />
+              </Card>
+            ))}
+          </CardList>
+        </>
+      )}
+
+      <h2 style={sectionTitle}>
+        On the site ({displayed.length} of {cardSlots.length})
+      </h2>
+      {displayed.length === 0 ? (
+        <p>None yet. Approved endorsements fill the free cards.</p>
+      ) : (
         <CardList>
-          {pending.map((e) => (
-            <Card key={e.id} endorsement={e} note="Not on the site yet.">
-              <ActionForm
-                action={approve}
-                id={e.id}
-                className="pf-admin-btn pf-admin-btn-primary"
-              >
-                Approve
+          {displayed.map((e) => (
+            <Card key={e.id} endorsement={e} note="On the site.">
+              <ActionForm action={hide} id={e.id} className="pf-admin-btn">
+                Hide from the site
               </ActionForm>
-              <details>
-                <summary className="pf-admin-btn">Reject</summary>
-                <div style={{ marginTop: 10 }}>
-                  <ActionForm
-                    action={reject}
-                    id={e.id}
-                    className="pf-admin-btn"
-                  >
-                    Yes, delete it for good
-                  </ActionForm>
-                </div>
-              </details>
             </Card>
           ))}
         </CardList>
       )}
 
-      <h2 style={sectionTitle}>Approved ({approved.length})</h2>
-      {approved.length > cardSlots.length && (
-        <p style={{ marginTop: 0 }}>
-          The site has {cardSlots.length} cards, so only the {cardSlots.length}{" "}
-          most recently approved are showing.
-        </p>
-      )}
-      {approved.length === 0 ? (
-        <p>None yet. Approved endorsements appear on the site&apos;s cards.</p>
+      <h2 style={sectionTitle}>Approved, not on the site ({hidden.length})</h2>
+      {hidden.length === 0 ? (
+        <p>None.</p>
       ) : (
-        <CardList>
-          {approved.map((e, i) => (
-            <Card
-              key={e.id}
-              endorsement={e}
-              note={
-                i < cardSlots.length
-                  ? "On the site."
-                  : "Not showing: no free card."
-              }
-            >
-              <ActionForm action={unpublish} id={e.id} className="pf-admin-btn">
-                Take off the site
-              </ActionForm>
-            </Card>
-          ))}
-        </CardList>
+        <>
+          {cardsFull && (
+            <p style={{ marginTop: 0 }}>
+              All {cardSlots.length} cards are in use. Hide one above to show
+              one of these instead.
+            </p>
+          )}
+          <CardList>
+            {hidden.map((e) => (
+              <Card key={e.id} endorsement={e} note="Not on the site.">
+                <ActionForm
+                  action={show}
+                  id={e.id}
+                  className="pf-admin-btn pf-admin-btn-primary"
+                  disabled={cardsFull}
+                >
+                  Show on the site
+                </ActionForm>
+                <DeleteAction id={e.id} label="Delete" />
+              </Card>
+            ))}
+          </CardList>
+        </>
       )}
     </main>
   );

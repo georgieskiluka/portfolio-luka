@@ -10,10 +10,12 @@ import {
   startAdminSession,
 } from "@/lib/endorsements/admin-auth";
 import {
+  approveEndorsement,
   CARDS_CACHE_TAG,
   clientIp,
   deleteEndorsement,
-  setApproved,
+  hideEndorsement,
+  showEndorsement,
   withinRateLimit,
 } from "@/lib/endorsements/store";
 
@@ -53,11 +55,15 @@ async function change(
 }
 
 export async function approve(formData: FormData) {
-  await change(formData, (id) => setApproved(id, true));
+  await change(formData, approveEndorsement);
 }
 
-export async function unpublish(formData: FormData) {
-  await change(formData, (id) => setApproved(id, false));
+export async function show(formData: FormData) {
+  await change(formData, showEndorsement);
+}
+
+export async function hide(formData: FormData) {
+  await change(formData, hideEndorsement);
 }
 
 export async function reject(formData: FormData) {

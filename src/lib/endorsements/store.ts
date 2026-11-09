@@ -11,12 +11,12 @@ import type { EndorsementInput } from "./rules";
 
 export type StoredEndorsement = EndorsementInput & {
   id: string;
-  status: "pending" | "approved";
+  /** "hidden" means approved but not currently on a card. */
+  status: "pending" | "displayed" | "hidden";
   createdAt: string;
-  approvedAt?: string;
 };
 
-/** Tag on the cached card data; clear it whenever an approved endorsement changes. */
+/** Tag on the cached card data; clear it whenever the displayed endorsements change. */
 export const CARDS_CACHE_TAG = "endorsement-cards";
 
 const HASH_KEY = "endorsements";
@@ -49,28 +49,49 @@ export async function addPending(input: EndorsementInput): Promise<boolean> {
   return true;
 }
 
-/** Everything stored, split by status, newest first. */
+/** Everything stored, split by status, in the order it was submitted. */
 export async function listEndorsements() {
   const all = Object.values(
     (await db().hgetall<Record<string, StoredEndorsement>>(HASH_KEY)) ?? {}
-  );
+  ).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const withStatus = (status: StoredEndorsement["status"]) =>
+    all.filter((e) => e.status === status);
   return {
-    pending: all
-      .filter((e) => e.status === "pending")
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    approved: all
-      .filter((e) => e.status === "approved")
-      .sort((a, b) => (b.approvedAt ?? "").localeCompare(a.approvedAt ?? "")),
+    pending: withStatus("pending"),
+    displayed: withStatus("displayed"),
+    hidden: withStatus("hidden"),
   };
 }
 
-export async function setApproved(id: string, approved: boolean) {
-  const record = await db().hget<StoredEndorsement>(HASH_KEY, id);
+function setStatus(
+  record: StoredEndorsement,
+  status: StoredEndorsement["status"]
+) {
+  return db().hset(HASH_KEY, { [record.id]: { ...record, status } });
+}
+
+/** Approval fills a free card. Once every card is taken, Luka chooses what shows. */
+export async function approveEndorsement(id: string) {
+  const { pending, displayed } = await listEndorsements();
+  const record = pending.find((e) => e.id === id);
   if (!record) return;
-  const next: StoredEndorsement = approved
-    ? { ...record, status: "approved", approvedAt: new Date().toISOString() }
-    : { ...record, status: "pending", approvedAt: undefined };
-  await db().hset(HASH_KEY, { [id]: next });
+  const hasFreeCard = displayed.length < cardSlots.length;
+  await setStatus(record, hasFreeCard ? "displayed" : "hidden");
+}
+
+/** Does nothing while every card is taken. */
+export async function showEndorsement(id: string) {
+  const { hidden, displayed } = await listEndorsements();
+  const record = hidden.find((e) => e.id === id);
+  if (record && displayed.length < cardSlots.length) {
+    await setStatus(record, "displayed");
+  }
+}
+
+export async function hideEndorsement(id: string) {
+  const { displayed } = await listEndorsements();
+  const record = displayed.find((e) => e.id === id);
+  if (record) await setStatus(record, "hidden");
 }
 
 export async function deleteEndorsement(id: string) {
@@ -110,17 +131,20 @@ export async function withinRateLimit(
 const readCards = unstable_cache(
   async (): Promise<Endorsement[]> => {
     if (!redis) return [];
-    const { approved } = await listEndorsements();
+    const { displayed } = await listEndorsements();
     // Only the public fields ever reach the browser.
-    return approved
-      .slice(0, cardSlots.length)
-      .map(({ quote, name, role, rating }) => ({ quote, name, role, rating }));
+    return displayed.map(({ quote, name, role, rating }) => ({
+      quote,
+      name,
+      role,
+      rating,
+    }));
   },
   ["endorsement-cards"],
   { tags: [CARDS_CACHE_TAG], revalidate: 3600 }
 );
 
-/** The newest approved endorsements, one per card. An outage leaves the cards blank. */
+/** The chosen endorsements, one per card. An outage leaves the cards blank. */
 export async function getCardEndorsements(): Promise<Endorsement[]> {
   try {
     return await readCards();

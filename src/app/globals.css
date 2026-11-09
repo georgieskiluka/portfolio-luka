@@ -348,7 +348,12 @@ html:has(.pf-end-dialog[open]) {
   color: var(--navy);
 }
 
-.pf-admin-btn:hover {
+.pf-admin-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.pf-admin-btn:hover:not(:disabled) {
   background: var(--gold-pressed);
   border-color: var(--gold-pressed);
   color: var(--navy);
